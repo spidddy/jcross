@@ -7,7 +7,8 @@
 import tkinter as tk
 
 rows = [[3, 4]]
-columns =[[3, 2]]
+columns = [[3, 2]]
+
 
 def add_row():
     num = numbers.get().split()
@@ -17,21 +18,22 @@ def add_row():
     numbers.delete(0, tk.END)
     return rewrite()
 
+
 def add_col():
     num = numbers.get().split()
     for i in range(len(num)):
         num[i] = int(num[i])
     columns.append(num)
-    print(columns)
     numbers.delete(0, tk.END)
     return rewrite()
 
 # Временные переменные для отрисовки интерфейса
+
 cr_width = 10
 cr_height = 10
 
-#columns = [[1, 2], [3, 2], [3, 1], [1, 4], [1], [3, 1], [3, 1, 3], [5, 3], [4, 3], [4, 1]]
-#rows = [[2, 4], [4, 4], [2, 5], [1, 3], [5], [1], [1, 3], [3, 5], [2, 3], [1]]
+# columns = [[1, 2], [3, 2], [3, 1], [1, 4], [1], [3, 1], [3, 1, 3], [5, 3], [4, 3], [4, 1]]
+# rows = [[2, 4], [4, 4], [2, 5], [1, 3], [5], [1], [1, 3], [3, 5], [2, 3], [1]]
 
 #################################################
 
@@ -39,6 +41,7 @@ root = tk.Tk()
 root.title('Решаем японские кроссворды')
 # root.geometry('800x600')
 print(rows)
+print(columns)
 c_max = 0
 for i in columns:
     if len(i) > c_max:
@@ -60,7 +63,7 @@ def rewrite():
     body = tk.Frame(root)
     top_left = tk.Frame(body)
     for i in range(c_max):
-        for j in range (r_max):
+        for j in range(r_max):
             tk.Frame(top_left, width=25, height=25, bg='green').grid(row=i, column=j)
 
     top_left.pack(side=tk.LEFT)
@@ -103,4 +106,5 @@ def rewrite():
     body2.pack()
 
 
+root.update()
 root.mainloop()
