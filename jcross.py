@@ -67,6 +67,8 @@ def paint_crossword():
             b = y + i * 24
             if crossword[i][j] == 1:
                 square_color = 'black'
+            elif crossword[i][j] == 0.5:
+                square_color = 'azure'
             else:
                 square_color = 'white'
             canv.create_rectangle(a, b, a + 24, b + 24, fill=square_color)
@@ -102,9 +104,74 @@ def canv_size():
 
 
 def empty_cross():
-    crossword = [[0] * len(columns)] * len(rows)
+    crossword = [[0.5 for x in range(len(columns))] for y in range(len(rows))]
     return crossword
 
+def solution():
+    for i in range(len(rows)):
+        position = 0
+        if sum(rows[i]) + len(rows[i]) - 1 > len(columns) / 2:
+            k = len(columns) - sum(rows[i]) - len(rows[i]) + 1
+            for num in rows[i]:
+                if num > k:
+                    for j in range(position + k, position + num):
+                        crossword[i][j] = 1
+                        paint_crossword()
+                position += num + 1
+    for i in range(len(columns)):
+        position = 0
+        if sum(columns[i]) + len(columns[i]) - 1 > len(rows) / 2:
+            k = len(rows) - sum(columns[i]) - len(columns[i]) + 1
+            for num in columns[i]:
+                if num > k:
+                    for j in range(position + k, position + num):
+                        crossword[j][i] = 1
+                        paint_crossword()
+                position += num + 1
+    check()
+
+def check():
+    cr_rows = []
+    for row in crossword:
+        numbers = []
+        k = 0
+        for i in range(len(row)):
+            if row[i] == 1:
+                if i == 0:
+                    numbers.append(1)
+                else:
+                    if row[i - 1] == 1:
+                        numbers[k] += 1
+                    else:
+                        numbers.append(1)
+            elif i > 0 and row[i - 1] == 1:
+                k += 1
+        cr_rows.append(numbers)
+    cr_cols = []
+    for j in range(len(crossword[0])):
+        col = [crossword[i][j] for i in range(len(crossword))]
+        numbers = []
+        k = 0
+        for i in range(len(col)):
+            if col[i] == 1:
+                if i == 0:
+                    numbers.append(1)
+                else:
+                    if col[i - 1] == 1:
+                        numbers[k] += 1
+                    else:
+                        numbers.append(1)
+            elif i > 0 and col[i - 1] == 1:
+                k += 1
+        cr_cols.append(numbers)
+    if cr_cols == columns and cr_rows == rows:
+        flag = True
+    else:
+        flag = False
+    print(crossword)
+    print(cr_cols)
+    print(cr_rows)
+    return flag, cr_cols, cr_rows
 
 canv_w = 500
 canv_h = 300
@@ -119,7 +186,7 @@ head = tk.Frame(root)
 numbers = tk.Entry(head, width=30)
 tk.Button(head, text='Доб. строку', command=add_row).grid(row=0, column=1)
 tk.Button(head, text='Доб. столбец', command=add_col).grid(row=0, column=2)
-tk.Button(head, text='Решить').grid(row=0, column=3)
+tk.Button(head, text='Решить', command=solution).grid(row=0, column=3)
 tk.Button(head, text='Очистить').grid(row=0, column=4)
 numbers.grid(row=0, column=0)
 head.pack(fill=tk.Y)
