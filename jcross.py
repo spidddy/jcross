@@ -72,7 +72,7 @@ def paint_crossword():
             if crossword[i][j] == 1:
                 square_color = 'black'
             elif crossword[i][j] == 0.5:
-                square_color = 'azure'
+                square_color = 'gray70'
             else:
                 square_color = 'white'
             canv.create_rectangle(a, b, a + 24, b + 24, fill=square_color)
@@ -159,6 +159,28 @@ def solution():
         col = cross_col(i)
         col_values = analysis(col)
         print(col_values)
+        current_number = 0
+        start_sq = 0
+        for j in range(len(col_values)):      # эта j еще понадобится
+            if col_values[j][0] == 1:
+                break
+            start_sq += col_values[j][1]
+        if start_sq == 0:
+            for k in range (columns[i][0]):
+                crossword[k][i] = 1
+            if k + 1 < cr_height:
+                crossword[k+1][i] = 0
+        else:
+            print(start_sq, j)
+            if columns[j][0] > start_sq:
+                for k in range(start_sq, columns[i][0]):
+                    crossword[k][i] = 1
+            if columns[j][0] == start_sq:
+                crossword[0][i] = 0
+
+
+    paint_crossword()
+
 
 
 
@@ -201,9 +223,6 @@ def check():
         flag = True
     else:
         flag = False
-    print(crossword)
-    print(cr_cols)
-    print(cr_rows)
     return flag, cr_cols, cr_rows
 
 
