@@ -2,7 +2,7 @@ import tkinter as tk
 
 
 def add_row():
-    global rows, canv_h, canv_w, crossword
+    global rows, canv_h, canv_w, crossword, cr_height
     num = numbers.get().split()
     if len(num) == 0:
         return
@@ -13,10 +13,12 @@ def add_row():
     canv_size()
     canv.config(width=canv_w, height=canv_h)
     crossword = empty_cross()
+    cr_height = len(rows)
     paint()
 
+
 def add_col():
-    global columns, canv_w, canv_h, crossword
+    global columns, canv_w, canv_h, crossword, cr_width
     num = numbers.get().split()
     if len(num) == 0:
         return
@@ -27,6 +29,7 @@ def add_col():
     canv_size()
     canv.config(width=canv_w, height=canv_h)
     crossword = empty_cross()
+    cr_width = len(columns)
     paint()
 
 
@@ -58,11 +61,12 @@ def top_side(x, y):
                 amendment = col_max() - len(columns[i])
                 canv.create_text(a + 12, b + 12, text=columns[i][j - amendment])
 
+
 def paint_crossword():
     global crossword
     x, y = 10 + row_max() * 24, 10 + col_max() * 24
-    for i in range(len(crossword)):
-        for j in range(len(crossword[i])):
+    for i in range(cr_height):
+        for j in range(cr_width):
             a = x + j * 24
             b = y + i * 24
             if crossword[i][j] == 1:
@@ -72,7 +76,6 @@ def paint_crossword():
             else:
                 square_color = 'white'
             canv.create_rectangle(a, b, a + 24, b + 24, fill=square_color)
-
 
 
 def row_max():
@@ -94,11 +97,11 @@ def col_max():
 
 
 def canv_size():
-    global canv_w, canv_h
-    canv_width = (len(columns) + row_max()) * 24 + 20
+    global canv_w, canv_h, cr_height, cr_width
+    canv_width = (cr_width + row_max()) * 24 + 20
     if canv_w < canv_width:
         canv_w = canv_width
-    canv_height = (len(rows) + col_max()) * 24 + 20
+    canv_height = (cr_height + col_max()) * 24 + 20
     if canv_h < canv_height:
         canv_h = canv_height
 
@@ -106,6 +109,29 @@ def canv_size():
 def empty_cross():
     crossword = [[0.5 for x in range(len(columns))] for y in range(len(rows))]
     return crossword
+
+
+def cross_row(n):
+    return crossword[n]
+
+
+def cross_col(n):
+    return [crossword[i][n] for i in range(len(crossword))]
+
+
+def analysis(line):
+    line_values = []
+    for i in range(len(line)):
+        if i == 0:
+            current_value = [line[i], 1]
+            line_values.append(current_value)
+        else:
+            if line[i] == line[i-1]:
+                current_value[1] += 1
+            else:
+                current_value = [line[i], 1]
+                line_values.append(current_value)
+    return line_values
 
 def solution():
     for i in range(len(rows)):
@@ -128,11 +154,18 @@ def solution():
                         crossword[j][i] = 1
                         paint_crossword()
                 position += num + 1
-    check()
+    flag, cr_cols, cr_rows = check()
+    for i in range(cr_width):
+        col = cross_col(i)
+        col_values = analysis(col)
+        print(col_values)
+
+
 
 def check():
     cr_rows = []
-    for row in crossword:
+    for j in range(len(crossword)):
+        row = cross_row(j)
         numbers = []
         k = 0
         for i in range(len(row)):
@@ -149,7 +182,7 @@ def check():
         cr_rows.append(numbers)
     cr_cols = []
     for j in range(len(crossword[0])):
-        col = [crossword[i][j] for i in range(len(crossword))]
+        col = cross_col(j)
         numbers = []
         k = 0
         for i in range(len(col)):
@@ -173,13 +206,17 @@ def check():
     print(cr_rows)
     return flag, cr_cols, cr_rows
 
+
 canv_w = 500
 canv_h = 300
 rows = []
 columns = []
 columns = [[1, 2], [3, 2], [3, 1], [1, 4], [1], [3, 1], [3, 1, 3], [5, 3], [4, 3], [4, 1]]
 rows = [[2, 4], [4, 4], [2, 5], [1, 3], [5], [1], [1, 3], [3, 5], [2, 3], [1]]
-
+cr_width = 0
+cr_height = 0
+cr_width = len(columns)
+cr_height = len(rows)
 root = tk.Tk()
 
 head = tk.Frame(root)
