@@ -126,12 +126,13 @@ def analysis(line):
             current_value = [line[i], 1]
             line_values.append(current_value)
         else:
-            if line[i] == line[i-1]:
+            if line[i] == line[i - 1]:
                 current_value[1] += 1
             else:
                 current_value = [line[i], 1]
                 line_values.append(current_value)
     return line_values
+
 
 def solution():
     for i in range(len(rows)):
@@ -158,30 +159,86 @@ def solution():
     for i in range(cr_width):
         col = cross_col(i)
         col_values = analysis(col)
-        print(col_values)
-        current_number = 0
+
+        # проверка верхнего края
         start_sq = 0
-        for j in range(len(col_values)):      # эта j еще понадобится
+        for j in range(len(col_values)):
             if col_values[j][0] == 1:
                 break
             start_sq += col_values[j][1]
         if start_sq == 0:
-            for k in range (columns[i][0]):
+            for k in range(columns[i][0]):
                 crossword[k][i] = 1
             if k + 1 < cr_height:
-                crossword[k+1][i] = 0
+                crossword[k + 1][i] = 0
         else:
-            print(start_sq, j)
-            if columns[j][0] > start_sq:
+            if columns[i][0] > start_sq:
                 for k in range(start_sq, columns[i][0]):
                     crossword[k][i] = 1
-            if columns[j][0] == start_sq:
+            if columns[i][0] == start_sq:
                 crossword[0][i] = 0
+        # проверка нижнего края
+        start_sq = cr_height - 1
+        for j in range(len(col_values), 0, -1):
+            if col_values[j - 1][0] == 1:
+                break
+            start_sq -= col_values[j - 1][1]
+        if start_sq == cr_height - 1:
+            for k in range(cr_height, columns[i][0], -1):
+                crossword[k][i] = 1
+            if k - 1 < cr_height:
+                crossword[k - 1][i] = 0
+        else:
+            if cr_height - columns[i][-1] < start_sq:
+                for k in range(start_sq - 1, cr_height - 1 - columns[i][-1], -1):
+                    crossword[k][i] = 1
+            if cr_height - 1 - columns[i][-1] == start_sq:
+                crossword[-1][i] = 0
 
+
+
+    for i in range(cr_height):
+        row = cross_row(i)
+        row_values = analysis(row)
+
+        # проверка левого края
+        start_sq = 0
+        for j in range(len(row_values)):
+            if row_values[j][0] == 1:
+                break
+            start_sq += row_values[j][1]
+        if start_sq == 0:
+            for k in range(rows[i][0]):
+                crossword[i][k] = 1
+            if k + 1 < cr_width:
+                crossword[i][k + 1] = 0
+        else:
+            print(start_sq, j)
+            if rows[i][0] > start_sq:
+                for k in range(start_sq, rows[i][0]):
+                    crossword[i][k] = 1
+            if rows[i][0] == start_sq:
+                crossword[i][0] = 0
+        # проверка правого края
+        start_sq = cr_width - 1
+        for j in range(len(row_values), 0, -1):
+            if row_values[j - 1][0] == 1:
+                break
+            start_sq -= row_values[j - 1][1]
+        if start_sq == cr_width - 1:
+            for k in range(cr_width, rows[i][0], -1):
+                crossword[i][k] = 1
+            if k - 1 < cr_width:
+                crossword[i][k - 1] = 0
+        else:
+            print(start_sq)
+            if cr_width - rows[i][-1] < start_sq:
+                for k in range(start_sq, cr_width - 1 - rows[i][-1], -1):
+                    crossword[i][k] = 1
+            if cr_width - 1 - rows[i][-1] == start_sq:
+                crossword[i][-1] = 0
 
     paint_crossword()
-
-
 
 
 def check():
