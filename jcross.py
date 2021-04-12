@@ -63,7 +63,7 @@ def top_side(x, y):
 
 
 def paint_crossword():
-    global crossword
+    canv.delete()
     x, y = 10 + row_max() * 24, 10 + col_max() * 24
     for i in range(cr_height):
         for j in range(cr_width):
@@ -115,11 +115,28 @@ def cross_row(n):
     return crossword[n]
 
 
+def new_cross_row(n, line):
+    crossword[n] = line
+
+
 def cross_col(n):
     return [crossword[i][n] for i in range(len(crossword))]
 
 
-def analysis(line):
+def new_cross_col(n, line):
+    for i in range(len(line)):
+        crossword[i][n] = line[i]
+
+
+def analyze(line, nums):
+    start_sq = 0
+    if sum(nums) + len(nums) - 1 > len(line) / 2:
+        k = len(line) - sum(nums) - len(nums) + 1
+        for num in nums:
+            if num > k:
+                for i in range(start_sq + k, start_sq + num):
+                    line[i] = 1
+            start_sq += num + 1
     line_values = []
     for i in range(len(line)):
         if i == 0:
@@ -131,7 +148,26 @@ def analysis(line):
             else:
                 current_value = [line[i], 1]
                 line_values.append(current_value)
-    return line_values
+
+    return line
+
+
+
+def solu():
+    flag, cr_cols, cr_rows = check()
+    zzz = 0
+    while zzz < 1:
+        for i in range(cr_height):
+            line = cross_row(i)
+            new_line = analyze(line, rows[i])
+            new_cross_row(i, new_line)
+        for i in range(cr_width):
+            line = cross_col(i)
+            new_line = analyze(line, columns[i])
+            new_cross_col(i, new_line)
+        zzz += 1
+    paint_crossword()
+
 
 
 def solution():
@@ -241,6 +277,7 @@ def solution():
     paint_crossword()
 
 
+
 def check():
     cr_rows = []
     for j in range(len(crossword)):
@@ -299,7 +336,7 @@ head = tk.Frame(root)
 numbers = tk.Entry(head, width=30)
 tk.Button(head, text='Доб. строку', command=add_row).grid(row=0, column=1)
 tk.Button(head, text='Доб. столбец', command=add_col).grid(row=0, column=2)
-tk.Button(head, text='Решить', command=solution).grid(row=0, column=3)
+tk.Button(head, text='Решить', command=solu).grid(row=0, column=3)
 tk.Button(head, text='Очистить').grid(row=0, column=4)
 numbers.grid(row=0, column=0)
 head.pack(fill=tk.Y)
