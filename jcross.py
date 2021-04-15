@@ -139,7 +139,7 @@ def scissors(line, nums):
                 position += 1
             if line[i] == 1:
                 if line[i + 1] == 0:
-                    position += 1
+                    position += nums[num_position]
                     num_position += 1
             if line[i] == 0.5:
                 break
@@ -171,6 +171,7 @@ def analyze(line, nums):
                 line_values.append(current_value)
 
     for j in range(2):
+#        print(line, '\t\t', line_values, '\t\t', nums)
         line.reverse()
         nums.reverse()
         line_values.reverse()
@@ -195,21 +196,51 @@ def analyze(line, nums):
                             line[next_position + nums[0]] = 0
                         else:
                             line[0] = 0
+                    black_sq = 0
+                    for i in range(next_position, len(line)):
+                        if line[i] != 1:
+                            break
+                        black_sq += 1
+                    if black_sq == nums[0] and nums[0] >= next_position:
+                        line[next_position - 1] = 0
+                    if black_sq < nums[0] and line[next_position + black_sq] == 0:
+                        for i in range(next_position + black_sq - nums[0], next_position + black_sq):
+                            line[i] = 1
+                    # line [0.5, 0.5, 1, 1, 1, 0.5, 0.5, 0.5, 0.5, 0.5]
+                    # black_sq = 3
+                    # next_position = 2
 
-
+        # num = 0
+        # for i in range(len(line)):
+        #     if line[i] == 0:
+        #         for k in range(num, len(nums)):
+        #             if nums(k) > i:
+        #                 for m in range(i):
+        #                     line[m] = 0
 
 
 
     return line
 
+def analyze2(line, nums):
+    line_str = ''
+    for i in line:
+        if i == 0:
+            line_str += '.'
+        if i == 1:
+            line_str += 'X'
+        if i == 0.5:
+            line_str += '_'
+    print(line_str)
 
 
 def solu():
     flag, cr_cols, cr_rows = check()
     zzz = 0
-    while zzz < 10:
+    while zzz < 6:
         for i in range(cr_height):
             line = cross_row(i)
+            # analyze2(line, rows[i])
             snippet = scissors(line, rows[i])
             new_line = analyze(snippet[0], snippet[1])
             for j in range(snippet[2][2], len(line) - snippet[2][0]):
@@ -218,7 +249,6 @@ def solu():
         for i in range(cr_width):
             line = cross_col(i)
             snippet = scissors(line, columns[i])
-            print(snippet)
             new_line = analyze(snippet[0], snippet[1])
             for j in range(snippet[2][2], len(line) - snippet[2][0]):
                 line[j] = new_line[j - snippet[2][2]]
