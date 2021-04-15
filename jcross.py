@@ -127,6 +127,27 @@ def new_cross_col(n, line):
     for i in range(len(line)):
         crossword[i][n] = line[i]
 
+def scissors(line, nums):
+    cutoff = []
+    for j in range(2):
+        position = 0
+        num_position = 0
+        line.reverse()
+        nums.reverse()
+        for i in range(len(line)):
+            if line[i] == 0:
+                position += 1
+            if line[i] == 1:
+                if line[i + 1] == 0:
+                    position += 1
+                    num_position += 1
+            if line[i] == 0.5:
+                break
+        cutoff.append(position)
+        cutoff.append(num_position)
+    new_line = [line[i] for i in range(cutoff[2], len(line) - cutoff[0])]
+    new_nums = [nums[i] for i in range(cutoff[3], len(nums) - cutoff[1])]
+    return new_line, new_nums, cutoff
 
 def analyze(line, nums):
     start_sq = 0
@@ -148,10 +169,6 @@ def analyze(line, nums):
             else:
                 current_value = [line[i], 1]
                 line_values.append(current_value)
-    print(line)
-    print(nums)
-    print(line_values)
-    print()
 
     for j in range(2):
         line.reverse()
@@ -193,12 +210,19 @@ def solu():
     while zzz < 10:
         for i in range(cr_height):
             line = cross_row(i)
-            new_line = analyze(line, rows[i])
-            new_cross_row(i, new_line)
+            snippet = scissors(line, rows[i])
+            new_line = analyze(snippet[0], snippet[1])
+            for j in range(snippet[2][2], len(line) - snippet[2][0]):
+                line[j] = new_line[j - snippet[2][2]]
+            new_cross_row(i, line)
         for i in range(cr_width):
             line = cross_col(i)
-            new_line = analyze(line, columns[i])
-            new_cross_col(i, new_line)
+            snippet = scissors(line, columns[i])
+            print(snippet)
+            new_line = analyze(snippet[0], snippet[1])
+            for j in range(snippet[2][2], len(line) - snippet[2][0]):
+                line[j] = new_line[j - snippet[2][2]]
+            new_cross_col(i, line)
         zzz += 1
     paint_crossword()
 
